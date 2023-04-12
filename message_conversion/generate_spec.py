@@ -8,6 +8,8 @@ from .java_class_spec import JavaClassSpec, JavaTimeSpec, JavaDurationSpec
 def get_msg_class(cache, msg_type_name: str):
     if msg_type_name not in cache:
         connection_header = msg_type_name.split("/")
+        if len(connection_header) != 2:
+            raise ValueError(f"Invalid connection header: {msg_type_name}")
         ros_pkg = connection_header[0] + ".msg"
         msg_type = connection_header[1]
         msg_class = getattr(import_module(ros_pkg), msg_type)

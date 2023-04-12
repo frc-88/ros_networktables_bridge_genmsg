@@ -11,15 +11,18 @@ BASE_DIR=$(realpath "$(dirname $0)")
 INTERFACES_BASE_DIR=$1
 
 if [ -z ${INTERFACES_BASE_DIR} ]; then
-    SRC_ROS_MSG_DIR=~/tj2_ros/src/tj2_interfaces
+    echo "Interfaces source dir not set. Skipping custom message generation."
+    exit 0
 else
     SRC_ROS_MSG_DIR=${INTERFACES_BASE_DIR}
 fi
 
+CUSTOM_PKG_NAME=$(basename ${INTERFACES_BASE_DIR})
+
 GEN_MSG_ROOT=${BASE_DIR}/genmsg
 
 mkdir -p ${GEN_MSG_ROOT}
-ROS_MSG_DIR=${GEN_MSG_ROOT}/tj2_interfaces
+ROS_MSG_DIR=${GEN_MSG_ROOT}/${CUSTOM_PKG_NAME}
 rm -r ${ROS_MSG_DIR} || true
 cp -r ${SRC_ROS_MSG_DIR} ${ROS_MSG_DIR}
 

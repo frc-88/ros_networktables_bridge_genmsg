@@ -18,6 +18,8 @@ class JavaPrimitive(Enum):
 
 class RosPrimitive(Enum):
     bool = "bool"
+    byte = "byte"
+    char = "char"
     int8 = "int8"
     uint8 = "uint8"
     int16 = "int16"
@@ -38,6 +40,8 @@ PythonPrimitive = Union[bool, bytes, int, float, str]
 ROS_TO_JAVA_PRIMITIVE_MAPPING = {
     RosPrimitive.bool: JavaPrimitive.boolean,
     RosPrimitive.int8: JavaPrimitive.byte,
+    RosPrimitive.byte: JavaPrimitive.byte,
+    RosPrimitive.char: JavaPrimitive.char,
     RosPrimitive.uint8: JavaPrimitive.char,
     RosPrimitive.int16: JavaPrimitive.short,
     RosPrimitive.uint16: JavaPrimitive.short,
