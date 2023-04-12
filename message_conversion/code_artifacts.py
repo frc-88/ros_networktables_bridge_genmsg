@@ -1,6 +1,5 @@
 import re
 from dataclasses import dataclass
-from typing import Iterable
 from .constants import (
     JAVA_OBJECT_TO_PRIMITIVE,
     PRIMITIVE_DEFAULTS,
@@ -9,12 +8,7 @@ from .constants import (
     PYTHON_TO_JAVA_PRIMITIVE_MAPPING,
     JavaPrimitive,
 )
-from .java_class_spec import (
-    JavaClassSpec,
-    JavaDurationSpec,
-    JavaMessageField,
-    JavaTimeSpec,
-)
+from .java_class_spec import JavaClassSpec, JavaMessageField
 
 
 def camel_case(s):
@@ -277,7 +271,18 @@ def generate_java_code_from_spec(path: str, spec: JavaClassSpec):
     imports.add("import com.google.gson.JsonObject;")
     imports.add("import com.google.gson.annotations.Expose;")
 
+    imports = sorted(list(imports))
+
     import_code = "\n".join(imports)
+
+    if len(arg_strings) > 0:
+        args_constructor = f"""
+    public {class_name}({args}) {{
+{arg_assignment}
+    }}
+"""
+    else:
+        args_constructor = ""
 
     code = f"""// Auto generated!! Do not modify.
 package {package_root}{package_name};
@@ -288,16 +293,12 @@ public class {class_name} extends {package_root}RosMessage {{
 {constants_code}
 {fields_code}
     @Expose(serialize = false, deserialize = false)
-    public final String _type = "{spec.msg_type}";
+    public final java.lang.String _type = "{spec.msg_type}";
 
     public {class_name}() {{
 
     }}
-
-    public {class_name}({args}) {{
-{arg_assignment}
-    }}
-
+{args_constructor}
     public {class_name}(JsonObject jsonObj) {{
 {json_constructor}
     }}
@@ -308,7 +309,7 @@ public class {class_name} extends {package_root}RosMessage {{
         return ginst.toJsonTree(this).getAsJsonObject();
     }}
 
-    public String toString() {{
+    public java.lang.String toString() {{
         return ginst.toJson(this);
     }}
 }}

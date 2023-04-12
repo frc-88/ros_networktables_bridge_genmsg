@@ -13,7 +13,7 @@ class JavaPrimitive(Enum):
     long = "long"
     float = "float"
     double = "double"
-    String = "String"
+    String = "java.lang.String"
 
 
 class RosPrimitive(Enum):
@@ -66,7 +66,7 @@ PYTHON_TO_JAVA_PRIMITIVE_MAPPING = {
 PRIMITIVE_DEFAULTS = {
     JavaPrimitive.boolean: "false",
     JavaPrimitive.byte: "0",
-    JavaPrimitive.char: "''",
+    JavaPrimitive.char: "'\0'",
     JavaPrimitive.short: "0",
     JavaPrimitive.int: "0",
     JavaPrimitive.long: "0",
@@ -76,15 +76,15 @@ PRIMITIVE_DEFAULTS = {
 }
 
 PRIMITIVE_TO_JAVA_OBJECT = {
-    JavaPrimitive.boolean: "Boolean",
-    JavaPrimitive.byte: "Byte",
-    JavaPrimitive.char: "Char",
-    JavaPrimitive.short: "Short",
-    JavaPrimitive.int: "Int",
-    JavaPrimitive.long: "Long",
-    JavaPrimitive.float: "Float",
-    JavaPrimitive.double: "Double",
-    JavaPrimitive.String: "String",
+    JavaPrimitive.boolean: "java.lang.Boolean",
+    JavaPrimitive.byte: "java.lang.Byte",
+    JavaPrimitive.char: "java.lang.Character",
+    JavaPrimitive.short: "java.lang.Short",
+    JavaPrimitive.int: "java.lang.Integer",
+    JavaPrimitive.long: "java.lang.Long",
+    JavaPrimitive.float: "java.lang.Float",
+    JavaPrimitive.double: "java.lang.Double",
+    JavaPrimitive.String: "java.lang.String",
 }
 JAVA_OBJECT_TO_PRIMITIVE = {v: k for k, v in PRIMITIVE_TO_JAVA_OBJECT.items()}
 PRIMITIVE_JSON_FUNCTIONS = {

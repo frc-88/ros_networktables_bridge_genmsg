@@ -43,17 +43,18 @@ MSG_CLASS_CACHE = {}
 
 def get_message_constants(msg_instance):
     slots = set(msg_instance.__slots__)
-    props = set()
+    props = []
     for name, value in vars(msg_instance.__class__).items():
         if name.startswith("_"):
             continue
         if callable(value):
             continue
-        props.add(name)
-    constants = props.difference(slots)
+        props.append(name)
+    constants = set(props).difference(slots)
     constants_map = {}
-    for name in constants:
-        constants_map[name] = getattr(msg_instance, name)
+    for name in props:  # iterating over the list preserves the order
+        if name in constants:
+            constants_map[name] = getattr(msg_instance, name)
     return constants_map
 
 
