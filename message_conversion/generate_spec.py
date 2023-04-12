@@ -1,6 +1,6 @@
 import re
 from importlib import import_module
-from typing import Dict
+from typing import Dict, List
 from .constants import ROS_TO_JAVA_PRIMITIVE_MAPPING, RosPrimitive
 from .java_class_spec import JavaClassSpec, JavaTimeSpec, JavaDurationSpec
 
@@ -88,8 +88,10 @@ def java_class_spec_generator(class_spec: JavaClassSpec, msg_instance):
 
 
 def filter_unique_objects(
-    unique_objects: Dict[str, JavaClassSpec], class_spec: JavaClassSpec
+    unique_objects: Dict[str, JavaClassSpec], class_spec: JavaClassSpec, blacklist: List[str]
 ):
+    if class_spec.msg_type in blacklist:
+        return
     if class_spec.msg_type in unique_objects:
         assert unique_objects[class_spec.msg_type] == class_spec, (
             "Found class specs that don't match: %s != %s"
@@ -99,4 +101,4 @@ def filter_unique_objects(
         unique_objects[class_spec.msg_type] = class_spec
     for field in class_spec.fields.values():
         if type(field) == JavaClassSpec:
-            filter_unique_objects(unique_objects, field)
+            filter_unique_objects(unique_objects, field, blacklist)

@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass
+from typing import List
 from .constants import (
     JAVA_OBJECT_TO_PRIMITIVE,
     PRIMITIVE_DEFAULTS,
@@ -211,9 +212,9 @@ def get_package_root(path: str) -> str:
     return package_root
 
 
-def generate_java_code_from_spec(path: str, spec: JavaClassSpec):
+def generate_java_code_from_spec(path: str, spec: JavaClassSpec, external_package: str, blacklist: List[str]):
     package_name, class_name = spec.msg_type.split("/")
-    package_root = get_package_root(path)
+    project_package_root = get_package_root(path)
 
     arg_strings = []
     imports = set()
@@ -225,6 +226,10 @@ def generate_java_code_from_spec(path: str, spec: JavaClassSpec):
     setters = ""
     json_constructor = ""
     for name, field in spec.fields.items():
+        if field.msg_type in blacklist:
+            package_root = external_package
+        else:
+            package_root = project_package_root
         if type(field) == JavaMessageField:
             if field.size == -1:
                 results = generate_code_from_field(imports, package_root, name, field)
@@ -285,11 +290,11 @@ def generate_java_code_from_spec(path: str, spec: JavaClassSpec):
         args_constructor = ""
 
     code = f"""// Auto generated!! Do not modify.
-package {package_root}{package_name};
+package {project_package_root}{package_name};
 
 {import_code}
 
-public class {class_name} extends {package_root}RosMessage {{
+public class {class_name} extends {external_package}RosMessage {{
 {constants_code}
 {fields_code}
     @Expose(serialize = false, deserialize = false)

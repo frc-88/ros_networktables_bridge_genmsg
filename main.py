@@ -1,7 +1,6 @@
 from importlib import import_module
 import os
 import json
-import sys
 import argparse
 
 from message_conversion.java_class_spec import JavaClassSpec
@@ -22,14 +21,15 @@ def write_java_file(root_path: str, relative_path: str, code: str) -> None:
         file.write(code)
 
 
-def generate_from_messages(root_path, messages):
+def generate_from_messages(root_path, messages, default_messages, external_package):
+    blacklist = [msg._type for msg in default_messages]
     unique_objects = {}
     for msg in messages:
         class_spec = JavaClassSpec(msg._type)
         java_class_spec_generator(class_spec, msg)
-        filter_unique_objects(unique_objects, class_spec)
+        filter_unique_objects(unique_objects, class_spec, blacklist)
     for spec in unique_objects.values():
-        relative_path, code = generate_java_code_from_spec(root_path, spec)
+        relative_path, code = generate_java_code_from_spec(root_path, spec, external_package + ".messages.", blacklist)
         write_java_file(root_path, relative_path, code)
     return unique_objects
 
@@ -48,8 +48,12 @@ def import_sources(source_file_path: str):
     return messages
 
 
+
 def main():
-    parser = argparse.ArgumentParser(description='publish_landmark')
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    default_source_list = f"{base_dir}/source_list.json"
+
+    parser = argparse.ArgumentParser(description="generate_java_messages")
     parser.add_argument(
         "--root", "-r", default="../src/main/java", type=str, help="Java project root"
     )
@@ -57,16 +61,25 @@ def main():
         "--messages", "-m", default="frc/team88/ros/messages", type=str, help="Messages destination subdirectory"
     )
     parser.add_argument(
-        "--sources", "-s", default="./source_list.json", type=str, help="List of message connection headers to generate"
+        "--sources", "-s", default="", type=str, help="List of message connection headers to generate"
     )
     args = parser.parse_args()
 
     java_root = os.path.abspath(args.root)
     root_path = args.messages
-    sources_file_path = os.path.abspath(args.sources)
-    os.chdir(java_root)
+    if len(args.sources) == 0:
+        sources_file_path = default_source_list
+        default_messages = []
+    else:
+        sources_file_path = os.path.abspath(args.sources)
+        default_messages = import_sources(default_source_list)
+
+    external_package = "frc.team88.ros"
+
     messages = import_sources(sources_file_path)
-    generate_from_messages(root_path, messages)
+
+    os.chdir(java_root)
+    generate_from_messages(root_path, messages, default_messages, external_package)
 
 
 if __name__ == "__main__":
