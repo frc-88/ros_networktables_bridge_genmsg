@@ -11,8 +11,8 @@ BASE_DIR=$(realpath "$(dirname $0)")
 INTERFACES_BASE_DIR=$1
 
 if [ -z ${INTERFACES_BASE_DIR} ]; then
-    echo "Interfaces source dir not set. Skipping custom message generation."
-    exit 0
+    echo "Interfaces source dir not set!"
+    exit 1
 else
     SRC_ROS_MSG_DIR=${INTERFACES_BASE_DIR}
 fi

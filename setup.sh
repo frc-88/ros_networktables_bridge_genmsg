@@ -6,7 +6,5 @@ python3 -m pip install virtualenv
 python3 -m venv ${BASE_DIR}/venv
 
 source ${BASE_DIR}/venv/bin/activate
-python3 -m pip install --upgrade pip setuptools
-python3 -m pip install -r ${BASE_DIR}/requirements.txt
-
-${BASE_DIR}/build-rospy-messages.sh
+${BASE_DIR}/venv/bin/pip install --upgrade pip setuptools
+${BASE_DIR}/venv/bin/pip install -r ${BASE_DIR}/requirements.txt
