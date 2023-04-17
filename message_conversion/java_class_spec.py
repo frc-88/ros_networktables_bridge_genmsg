@@ -6,6 +6,11 @@ from .constants import JavaPrimitive, PythonPrimitive
 
 @dataclass
 class JavaMessageField:
+    """
+    Represents a Java class primitive field and its corresponding value.
+    size is -1 for not a list, 0 for a variable list, >0 for a fixed size list.
+    """
+
     value: PythonPrimitive
     msg_type: JavaPrimitive
     size: int
@@ -13,33 +18,73 @@ class JavaMessageField:
 
 class JavaClassSpec:
     def __init__(self, msg_type_name: str, size=-1) -> None:
+        """
+        Initializes a JavaClassSpec object.
+
+        :param msg_type_name: The message type name.
+        :param size: The size of the list, -1 for not a list, 0 for a variable list, >0 for a fixed size list.
+        """
         self.fields: Dict[str, Union[JavaMessageField, JavaClassSpec]] = {}
         self.constants: Dict[str, PythonPrimitive] = {}
         self.msg_type = msg_type_name
         self.size = size
-        # -1 = not a list
-        # 0 = variable list
-        # >0 = fixed size list
 
     def add_constant(self, name: str, value: PythonPrimitive) -> None:
+        """
+        Adds a constant to the class specification.
+
+        :param name: The name of the constant.
+        :param value: The value of the constant.
+        """
         self.constants[name] = value
 
     def add_field(
         self, name: str, value: PythonPrimitive, msg_type: JavaPrimitive, size=-1
     ) -> None:
+        """
+        Adds a field to the class specification.
+
+        :param name: The name of the field.
+        :param value: The value of the field.
+        :param msg_type: The Java primitive type of the field.
+        :param size: The size of the list, -1 for not a list, 0 for a variable list, >0 for a fixed size list.
+        """
+        # Add a new JavaMessageField to the fields dictionary
         self.fields[name] = JavaMessageField(value, msg_type, size)
 
     def add_sub_msg(self, name: str, msg_type_name: str, size=-1) -> "JavaClassSpec":
+        """
+        Adds a submessage to the class specification.
+
+        :param name: The name of the submessage.
+        :param msg_type_name: The message type name of the submessage.
+        :param size: The size of the list, -1 for not a list, 0 for a variable list, >0 for a fixed size list.
+        :return: The created JavaClassSpec for the submessage.
+        """
+        # Create a new JavaClassSpec object for the submessage
         spec = JavaClassSpec(msg_type_name, size)
+        # Add the new JavaClassSpec to the fields dictionary
         self.add_sub_spec(name, spec)
         return spec
 
     def add_sub_spec(self, name: str, spec: "JavaClassSpec"):
+        """
+        Adds a submessage specification to the class specification.
+
+        :param name: The name of the submessage.
+        :param spec: The JavaClassSpec object for the submessage.
+        """
+        # Add the JavaClassSpec to the fields dictionary
         self.fields[name] = spec
 
-    def _to_str(self, indent=0) -> str:
+    def _to_str(self, indent=0, tab_size=4) -> str:
+        """
+        Convert JavaClassSpec object to str for debug purposes. Does not generate Java code.
+
+        :return: A string containing all the names and properties formatted for human readability.
+        """
         indent += 1
-        field_indent_str = "    " * (indent)
+        field_indent_str = " " * (indent * tab_size)
         string = f"{self.msg_type}:\n"
         for name, value in self.fields.items():
             if type(value) == JavaMessageField:
@@ -51,6 +96,11 @@ class JavaClassSpec:
         return string
 
     def __eq__(self, __value: object) -> bool:
+        """
+        Check if this object is equivalent to another.
+        If the other object is not JavaClassSpec, they are not equal.
+        Otherwise, check if all the fields and values match.
+        """
         if type(__value) == JavaClassSpec:
             if self.fields.keys() != __value.fields.keys():
                 return False

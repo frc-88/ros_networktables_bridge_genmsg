@@ -1,10 +1,9 @@
-
-
 from enum import Enum
 from typing import Union
 
 
 class JavaPrimitive(Enum):
+    # An enumeration of Java type primitives
     boolean = "boolean"
     byte = "byte"
     char = "char"
@@ -17,6 +16,8 @@ class JavaPrimitive(Enum):
 
 
 class RosPrimitive(Enum):
+    # An enumeration of ROS primitive data types.
+    # See this wiki page for reference: http://wiki.ros.org/msg#Fields
     bool = "bool"
     byte = "byte"
     char = "char"
@@ -38,6 +39,7 @@ class RosPrimitive(Enum):
 PythonPrimitive = Union[bool, bytes, int, float, str]
 
 ROS_TO_JAVA_PRIMITIVE_MAPPING = {
+    # A conversion mapping from ROS to Java primitives
     RosPrimitive.bool: JavaPrimitive.boolean,
     RosPrimitive.int8: JavaPrimitive.byte,
     RosPrimitive.byte: JavaPrimitive.byte,
@@ -56,6 +58,7 @@ ROS_TO_JAVA_PRIMITIVE_MAPPING = {
     RosPrimitive.duration: JavaPrimitive.long,
 }
 PYTHON_TO_JAVA_PRIMITIVE_MAPPING = {
+    # A conversion mapping from Python to Java primitives
     bool: JavaPrimitive.boolean,
     int: JavaPrimitive.int,
     float: JavaPrimitive.double,
@@ -64,6 +67,7 @@ PYTHON_TO_JAVA_PRIMITIVE_MAPPING = {
     bytes: JavaPrimitive.String,
 }
 PRIMITIVE_DEFAULTS = {
+    # Java primitive default values
     JavaPrimitive.boolean: "false",
     JavaPrimitive.byte: "0",
     JavaPrimitive.char: "'\0'",
@@ -72,10 +76,11 @@ PRIMITIVE_DEFAULTS = {
     JavaPrimitive.long: "0",
     JavaPrimitive.float: "0.0f",
     JavaPrimitive.double: "0.0",
-    JavaPrimitive.String: "\"\"",
+    JavaPrimitive.String: '""',
 }
 
 PRIMITIVE_TO_JAVA_OBJECT = {
+    # Java primitive to object mapping
     JavaPrimitive.boolean: "java.lang.Boolean",
     JavaPrimitive.byte: "java.lang.Byte",
     JavaPrimitive.char: "java.lang.Character",
@@ -88,6 +93,7 @@ PRIMITIVE_TO_JAVA_OBJECT = {
 }
 JAVA_OBJECT_TO_PRIMITIVE = {v: k for k, v in PRIMITIVE_TO_JAVA_OBJECT.items()}
 PRIMITIVE_JSON_FUNCTIONS = {
+    # JSON to Java primitive conversion code snippets
     JavaPrimitive.boolean: "{obj}.getAsBoolean()",
     JavaPrimitive.byte: "{obj}.getAsByte()",
     JavaPrimitive.char: "(char){obj}.getAsByte()",

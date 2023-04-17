@@ -1,4 +1,3 @@
-# ROS stuff
 --extra-index-url https://rospypi.github.io/simple/
 actionlib-msgs
 diagnostic-msgs
