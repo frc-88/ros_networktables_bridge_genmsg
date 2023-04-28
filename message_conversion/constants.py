@@ -70,7 +70,7 @@ PRIMITIVE_DEFAULTS = {
     # Java primitive default values
     JavaPrimitive.boolean: "false",
     JavaPrimitive.byte: "0",
-    JavaPrimitive.char: "'\\0'",
+    JavaPrimitive.char: "0",
     JavaPrimitive.short: "0",
     JavaPrimitive.int: "0",
     JavaPrimitive.long: "0",
