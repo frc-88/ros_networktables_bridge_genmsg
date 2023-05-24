@@ -9,7 +9,7 @@ fi
 
 BASE_DIR=$(realpath "$(dirname $0)")
 INTERFACES_BASE_DIR=$1
-SOURCES_PATH=$2
+SOURCES_PATH=${2:-${BASE_DIR}/source_list.json}
 
 if [ -z ${INTERFACES_BASE_DIR} ]; then
     echo "Interfaces source dir not set!"

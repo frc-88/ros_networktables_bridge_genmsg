@@ -1,5 +1,4 @@
 import os
-import psutil
 import argparse
 import json
 from typing import List
@@ -37,11 +36,13 @@ def import_repos(source_file_path: str) -> List[RepositoryInfo]:
 
 
 def is_bash():
-    pproc_name = psutil.Process(os.getppid()).name()
-    return pproc_name == "bash"
+    return "bash" in os.environ["SHELL"]
 
 
 def exec_clone(url: str, branch: str, destination: str) -> None:
+    if os.path.isdir(destination):
+        print(f"{url} already exists locally")
+        return
     if is_bash():
         os.system(f"git clone {url} -b {branch} {destination}")
     else:
