@@ -32,15 +32,12 @@
         "std_msgs/UInt64MultiArray",
         "std_msgs/UInt8",
         "std_msgs/UInt8MultiArray",
-
         "actionlib_msgs/GoalID",
         "actionlib_msgs/GoalStatus",
         "actionlib_msgs/GoalStatusArray",
-
         "diagnostic_msgs/DiagnosticArray",
         "diagnostic_msgs/DiagnosticStatus",
         "diagnostic_msgs/KeyValue",
-
         "geometry_msgs/Accel",
         "geometry_msgs/AccelStamped",
         "geometry_msgs/AccelWithCovariance",
@@ -70,13 +67,11 @@
         "geometry_msgs/Vector3Stamped",
         "geometry_msgs/Wrench",
         "geometry_msgs/WrenchStamped",
-
         "nav_msgs/GridCells",
         "nav_msgs/MapMetaData",
         "nav_msgs/OccupancyGrid",
         "nav_msgs/Odometry",
         "nav_msgs/Path",
-
         "sensor_msgs/BatteryState",
         "sensor_msgs/CameraInfo",
         "sensor_msgs/ChannelFloat32",
@@ -104,19 +99,15 @@
         "sensor_msgs/RelativeHumidity",
         "sensor_msgs/Temperature",
         "sensor_msgs/TimeReference",
-
         "shape_msgs/Mesh",
         "shape_msgs/MeshTriangle",
         "shape_msgs/Plane",
         "shape_msgs/SolidPrimitive",
-
         "stereo_msgs/DisparityImage",
-
         "trajectory_msgs/JointTrajectory",
         "trajectory_msgs/JointTrajectoryPoint",
         "trajectory_msgs/MultiDOFJointTrajectory",
         "trajectory_msgs/MultiDOFJointTrajectoryPoint",
-
         "visualization_msgs/ImageMarker",
         "visualization_msgs/InteractiveMarker",
         "visualization_msgs/InteractiveMarkerControl",
@@ -127,8 +118,19 @@
         "visualization_msgs/Marker",
         "visualization_msgs/MarkerArray",
         "visualization_msgs/MenuEntry",
-
         "tf2_msgs/TFMessage",
         "tf2_msgs/TF2Error"
+    ],
+    "repos": [
+        {
+            "local-name": "std_msgs",
+            "uri": "https://github.com/ros/std_msgs.git",
+            "version": "kinetic-devel"
+        },
+        {
+            "local-name": "common_msgs",
+            "uri": "https://github.com/ros/common_msgs.git",
+            "version": "noetic-devel"
+        }
     ]
 }

@@ -9,6 +9,7 @@ fi
 
 BASE_DIR=$(realpath "$(dirname $0)")
 INTERFACES_BASE_DIR=$1
+SOURCES_PATH=$2
 
 if [ -z ${INTERFACES_BASE_DIR} ]; then
     echo "Interfaces source dir not set!"
@@ -26,14 +27,7 @@ ROS_MSG_DIR=${GEN_MSG_ROOT}/${CUSTOM_PKG_NAME}
 rm -r ${ROS_MSG_DIR} || true
 cp -r ${SRC_ROS_MSG_DIR} ${ROS_MSG_DIR}
 
-if [ ! -d ${GEN_MSG_ROOT}/std_msgs ] ; then
-    git clone https://github.com/ros/std_msgs.git ${GEN_MSG_ROOT}/std_msgs
-fi
-
-if [ ! -d ${GEN_MSG_ROOT}/common_msgs ] ; then
-    git clone https://github.com/ros/common_msgs.git ${GEN_MSG_ROOT}/common_msgs
-fi
-
 source ${BASE_DIR}/venv/bin/activate
+python3 ${BASE_DIR}/clone_repos.py ${SOURCES_PATH} ${GEN_MSG_ROOT}
 rospy-build genmsg ${ROS_MSG_DIR} -s ${GEN_MSG_ROOT}
 python3 -m pip install -e ${ROS_MSG_DIR}

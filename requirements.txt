@@ -14,3 +14,4 @@ tf2-msgs
 rospy
 rospy-builder
 genpy
+psutil
