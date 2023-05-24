@@ -121,16 +121,5 @@
         "tf2_msgs/TFMessage",
         "tf2_msgs/TF2Error"
     ],
-    "repos": [
-        {
-            "local-name": "std_msgs",
-            "uri": "https://github.com/ros/std_msgs.git",
-            "version": "kinetic-devel"
-        },
-        {
-            "local-name": "common_msgs",
-            "uri": "https://github.com/ros/common_msgs.git",
-            "version": "noetic-devel"
-        }
-    ]
+    "repos": []
 }
