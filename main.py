@@ -1,7 +1,8 @@
-from importlib import import_module
 import os
 import json
 import argparse
+import inspect
+from importlib import import_module
 from typing import Iterable, List
 
 from message_conversion.ros_message import RosMessage
@@ -49,7 +50,7 @@ def generate_from_messages(
 
     :param root_path: The root path where the Java files should be created.
     :param messages: An iterable of ROS messages to be processed.
-    :param default_messages: An iterable of ROS messages already generated in 
+    :param default_messages: An iterable of ROS messages already generated in
         ROSNetworkTablesBridge (skip these messages).
     :param external_package: The package name for the generated Java code.
     :return: A dictionary of unique Java class specifications.
@@ -77,6 +78,14 @@ def generate_from_messages(
     return unique_objects
 
 
+def get_msg_classes(msg_module):
+    classes = []
+    for name, obj in inspect.getmembers(msg_module):
+        if inspect.isclass(obj):
+            classes.append(obj)
+    return classes
+
+
 def import_sources(source_file_path: str) -> List[RosMessage]:
     """
     Imports ROS message sources from a JSON file.
@@ -97,13 +106,20 @@ def import_sources(source_file_path: str) -> List[RosMessage]:
         connection_header = source.split("/")
         ros_pkg = connection_header[0] + ".msg"
         msg_type = connection_header[1]
+        module = import_module(ros_pkg)
+        if msg_type == "*":
+            classes = get_msg_classes(module)
+            for msg_class in classes:
+                # Create a new instance of the ROS message class and add it to the list
+                message = msg_class()
+                messages.append(message)
+        else:
+            # Import the ROS message class
+            msg_class = getattr(module, msg_type)
 
-        # Import the ROS message class
-        msg_class = getattr(import_module(ros_pkg), msg_type)
-
-        # Create a new instance of the ROS message class and add it to the list
-        message = msg_class()
-        messages.append(message)
+            # Create a new instance of the ROS message class and add it to the list
+            message = msg_class()
+            messages.append(message)
 
     return messages
 

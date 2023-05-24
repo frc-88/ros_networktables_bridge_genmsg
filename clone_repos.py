@@ -1,58 +1,38 @@
 import os
+import shutil
 import argparse
-import json
+import urllib.parse
 from typing import List
-from dataclasses import dataclass
 
-
-@dataclass
-class RepositoryInfo:
-    local_name: str
-    uri: str
-    version: str
-
-
-def import_repos(source_file_path: str) -> List[RepositoryInfo]:
-    """
-    Imports repository info from a JSON file.
-
-    :param source_file_path: The path to the JSON file containing the repos.
-    :return: A list of objects containing info about the specified repos.
-    """
-    # Open the JSON file and load the "sources" key
-    with open(source_file_path) as file:
-        repos = json.load(file)["repos"]
-
-    # iterate over the repos and store them in an object
-    infos = []
-    for repo in repos:
-        info = RepositoryInfo(
-            repo["local-name"],
-            repo["uri"],
-            repo["version"]
-        )
-        infos.append(info)
-    return infos
-
-
-def is_bash():
-    return "bash" in os.environ["SHELL"]
+from message_generation.helpers import is_bash, import_repos, RepositoryInfo
 
 
 def exec_clone(url: str, branch: str, destination: str) -> None:
     if os.path.isdir(destination):
         print(f"{url} already exists locally")
         return
+    print(f"Cloning {url} to {destination}")
     if is_bash():
         os.system(f"git clone {url} -b {branch} {destination}")
     else:
-        os.system(f"git \"clone\" {url} /b {branch} \"{destination}\"")
+        os.system(f'git "clone" {url} /b {branch} "{destination}"')
+
+
+def exec_copy(path: str, destination: str) -> None:
+    if os.path.isdir(destination):
+        shutil.rmtree(destination)
+    print(f"Copying {path} to {destination}")
+    shutil.copytree(path, destination)
 
 
 def clone(repos: List[RepositoryInfo], destination: str) -> None:
     for repo in repos:
         path = os.path.join(destination, repo.local_name)
-        exec_clone(repo.uri, repo.version, path)
+        result = urllib.parse.urlsplit(repo.uri)
+        if result.scheme == "file":
+            exec_copy(result.path, path)
+        else:
+            exec_clone(repo.uri, repo.version, path)
 
 
 def main():
