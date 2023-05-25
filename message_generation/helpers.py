@@ -1,5 +1,6 @@
 import os
 import json
+import platform
 from typing import List
 from dataclasses import dataclass
 
@@ -31,4 +32,8 @@ def import_repos(source_file_path: str) -> List[RepositoryInfo]:
 
 
 def is_bash():
-    return "bash" in os.environ["SHELL"]
+    return "bash" in os.environ.get("SHELL", "")
+
+
+def is_windows():
+    return platform.system() == "Windows"

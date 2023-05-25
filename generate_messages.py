@@ -2,7 +2,7 @@ import os
 import argparse
 from typing import List
 
-from message_generation.helpers import import_repos, is_bash, RepositoryInfo
+from message_generation.helpers import import_repos, is_bash, is_windows, RepositoryInfo
 
 # skip building these packages since they're already installed
 SPECIAL_NAMES = [
@@ -37,26 +37,32 @@ def find_package_dir(root: str) -> str:
 
 
 def append_to_python_path(path: str) -> None:
-    pythonpath = os.environ["PYTHONPATH"].strip()
+    pythonpath = os.environ.get("PYTHONPATH", "").strip()
     if len(pythonpath) != 0 and pythonpath[0] != ":":
-        pythonpath = ":" + pythonpath
+        if is_windows():
+            pythonpath = ";" + pythonpath
+        else:
+            pythonpath = ":" + pythonpath
     os.environ["PYTHONPATH"] = path + pythonpath
 
 
 def save_python_path(file_path: str) -> None:
-    pythonpath = os.environ["PYTHONPATH"]
-    bash_file_path = file_path + ".sh"
-    bash_command = f"export PYTHONPATH={pythonpath}"
-    with open(bash_file_path, "w") as file:
-        file.write(bash_command)
-
-    batch_file_path = file_path + ".bat"
-    batch_command = f"SET PYTHONPATH={pythonpath}"
-    with open(batch_file_path, "w") as file:
-        file.write(batch_command)
+    pythonpath = os.environ.get("PYTHONPATH", "")
+    if is_windows():
+        batch_file_path = file_path + ".bat"
+        batch_command = f"SET PYTHONPATH={pythonpath}"
+        with open(batch_file_path, "w") as file:
+            file.write(batch_command)
+    else:
+        bash_file_path = file_path + ".sh"
+        bash_command = f"export PYTHONPATH={pythonpath}"
+        with open(bash_file_path, "w") as file:
+            file.write(bash_command)
 
 
 def generate_rospy_messages(repos: List[RepositoryInfo], gen_msg_root: str) -> None:
+    if not os.path.isdir(gen_msg_root):
+        os.makedirs(gen_msg_root)
     for repo in repos:
         if repo.local_name in SPECIAL_NAMES:
             continue
