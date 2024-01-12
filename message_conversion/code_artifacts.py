@@ -394,6 +394,12 @@ def get_package_root(path: str) -> str:
     return package_root
 
 
+def get_class_special_case_package(package: str, class_name: str) -> str:
+    if package == "std_msgs":
+        return "Ros" + class_name
+    return class_name
+
+
 def generate_java_code_from_spec(
     path: str, spec: JavaClassSpec, external_package: str, blacklist: List[str]
 ) -> Tuple[str, str]:
@@ -408,6 +414,7 @@ def generate_java_code_from_spec(
     """
     package_name, class_name = spec.msg_type.split("/")
     project_package_root = get_package_root(path)
+    class_name = get_class_special_case_package(package_name, class_name)
 
     arg_strings = []
     imports = set()
