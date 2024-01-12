@@ -44,7 +44,7 @@ ROS_TO_JAVA_PRIMITIVE_MAPPING = {
     RosPrimitive.int8: JavaPrimitive.byte,
     RosPrimitive.byte: JavaPrimitive.byte,
     RosPrimitive.char: JavaPrimitive.char,
-    RosPrimitive.uint8: JavaPrimitive.char,
+    RosPrimitive.uint8: JavaPrimitive.byte,
     RosPrimitive.int16: JavaPrimitive.short,
     RosPrimitive.uint16: JavaPrimitive.short,
     RosPrimitive.int32: JavaPrimitive.int,
