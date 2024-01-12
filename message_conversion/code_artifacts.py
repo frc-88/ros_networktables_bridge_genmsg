@@ -52,6 +52,10 @@ def get_full_type(package_root: str, field: JavaClassSpec) -> str:
     :return: full Java type.
     """
     field_java_type = field.msg_type.replace("/", ".")
+    if "." in field_java_type:
+        package, class_name = field_java_type.split(".")
+        class_name = get_class_special_case_package(package, class_name)
+        field_java_type = f"{package}.{class_name}"
     full_type = f"{package_root}{field_java_type}"
     return full_type
 
