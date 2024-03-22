@@ -15,8 +15,8 @@ from .java_class_spec import JavaClassSpec, JavaMessageField
 
 def camel_case(snake_str: str) -> str:
     """
-    Converts a snake_case (words separated by _) or 
-    kebab-case (words separated by -) string to a 
+    Converts a snake_case (words separated by _) or
+    kebab-case (words separated by -) string to a
     camelCase (words separated by capital letters) string.
 
     :param snake_str: a string
@@ -253,7 +253,7 @@ def generate_code_from_static_array_type(
     # Generate JSON parsing code snippet for static array elements
     json_constructor = f"""        int {name}_element_index = 0;
         for (JsonElement {name}_element : jsonObj.getAsJsonArray("{name}")) {{
-            this.{name}[{name}_element_index] = {new_from_json_code.format(obj=f"{name}_element")};
+            this.{name}[{name}_element_index++] = {new_from_json_code.format(obj=f"{name}_element")};
         }}
 """
 
