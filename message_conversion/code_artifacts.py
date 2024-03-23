@@ -10,7 +10,7 @@ from .constants import (
     PYTHON_TO_JAVA_PRIMITIVE_MAPPING,
     JavaPrimitive,
 )
-from .java_class_spec import JavaClassSpec, JavaMessageField
+from .java_class_spec import SPEC_PRIMITIVES, JavaClassSpec, JavaMessageField
 
 
 def camel_case(snake_str: str) -> str:
@@ -41,7 +41,9 @@ class GeneratedCodeArtifacts:
     json_constructor: str  # JSON builder code
 
 
-def get_full_type(package_root: str, field: JavaClassSpec) -> str:
+def get_full_type(
+    package_root: str, external_package: str, field: JavaClassSpec
+) -> str:
     """
     Get the message's full Java type.
     ex. a JavaClassSpec generated from nav_msgs/Odometry becomes
@@ -51,7 +53,13 @@ def get_full_type(package_root: str, field: JavaClassSpec) -> str:
     :param field: JavaClassSpec object to generate a full type from.
     :return: full Java type.
     """
+
     field_java_type = field.msg_type.replace("/", ".")
+
+    # special case for wrapped primitives
+    if isinstance(field, SPEC_PRIMITIVES):
+        return f"{external_package}{field_java_type}"
+
     if "." in field_java_type:
         package, class_name = field_java_type.split(".")
         class_name = get_class_special_case_package(package, class_name)
@@ -304,7 +312,11 @@ def generate_code_from_field_static_list(
 
 
 def generate_code_from_spec_sub_msg(
-    imports: set, package_root: str, name: str, field: JavaClassSpec
+    imports: set,
+    package_root: str,
+    external_package: str,
+    name: str,
+    field: JavaClassSpec,
 ) -> GeneratedCodeArtifacts:
     """
     Generates code artifacts for a sub-message field in a Java class.
@@ -316,7 +328,7 @@ def generate_code_from_spec_sub_msg(
     :return: GeneratedCodeArtifacts containing code snippets for the sub-message field.
     """
     # Get the full type of the sub-message
-    full_type = get_full_type(package_root, field)
+    full_type = get_full_type(package_root, external_package, field)
 
     # Generate field declaration code snippet
     fields_code = f"{INDENT}private {full_type} {name} = new {full_type}();\n"
@@ -347,7 +359,11 @@ def generate_code_from_spec_sub_msg(
 
 
 def generate_code_from_spec_variable_list(
-    imports: set, package_root: str, name: str, field: JavaClassSpec
+    imports: set,
+    package_root: str,
+    external_package: str,
+    name: str,
+    field: JavaClassSpec,
 ) -> GeneratedCodeArtifacts:
     """
     Generates code artifacts for a variable-length list field of a custom type in a Java class.
@@ -360,12 +376,16 @@ def generate_code_from_spec_variable_list(
     """
     # Call generate_code_from_arraylist_type to generate the code snippets
     return generate_code_from_arraylist_type(
-        imports, name, get_full_type(package_root, field)
+        imports, name, get_full_type(package_root, external_package, field)
     )
 
 
 def generate_code_from_spec_static_list(
-    imports: set, package_root: str, name: str, field: JavaClassSpec
+    imports: set,
+    package_root: str,
+    external_package: str,
+    name: str,
+    field: JavaClassSpec,
 ) -> GeneratedCodeArtifacts:
     """
     Generates code artifacts for a static-length list field of a custom type in a Java class.
@@ -378,7 +398,7 @@ def generate_code_from_spec_static_list(
     """
     # Call generate_code_from_static_array_type to generate the code snippets
     return generate_code_from_static_array_type(
-        imports, name, get_full_type(package_root, field), field.size
+        imports, name, get_full_type(package_root, external_package, field), field.size
     )
 
 
@@ -453,15 +473,15 @@ def generate_java_code_from_spec(
         elif isinstance(field, JavaClassSpec):
             if field.size == -1:
                 results = generate_code_from_spec_sub_msg(
-                    imports, package_root, name, field
+                    imports, package_root, external_package, name, field
                 )
             elif field.size == 0:
                 results = generate_code_from_spec_variable_list(
-                    imports, package_root, name, field
+                    imports, package_root, external_package, name, field
                 )
             else:
                 results = generate_code_from_spec_static_list(
-                    imports, package_root, name, field
+                    imports, package_root, external_package, name, field
                 )
         else:
             raise ValueError(f"Invalid object found in fields: {field}")

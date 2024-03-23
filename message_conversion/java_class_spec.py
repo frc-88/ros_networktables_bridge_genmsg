@@ -109,9 +109,9 @@ class JavaClassSpec:
                 if type(field) != type(other_field):
                     return False
                 if type(field) == JavaMessageField and (
-                    field.value != other_field.value
+                    field.value != other_field.value  # type: ignore
                     or field.msg_type != other_field.msg_type
-                ):  # type: ignore
+                ):
                     return False
                 elif type(field) == JavaClassSpec and field != other_field:
                     return False
@@ -137,3 +137,9 @@ class JavaDurationSpec(JavaClassSpec):
 
         self.add_field("secs", 0, JavaPrimitive.int, -1)
         self.add_field("nsecs", 0, JavaPrimitive.int, -1)
+
+
+SPEC_PRIMITIVES = (
+    JavaDurationSpec,
+    JavaTimeSpec,
+)
